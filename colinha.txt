@@ -1,0 +1,5 @@
+--Para compilar:
+ gcc Atividade2.c -o Atividade2.exe -lfreeglut -lopengl32 -lglu32 -lwinmm -lgdi32
+
+ --Para rodar
+ ./Atividade2.exe
