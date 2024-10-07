@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#define TRUE 1
+#define FALSE 0
 #define PI 3.14159265358979323846
 
 void circulo(float x, float y, float raio);
+void semiCirculo(float x, float y, float raio, int voltadoParaCima);
 void desenhaMontanhas();
+void desenhaNuvens();
+void desenhaVegetacao();
 void display(void);
 
 
@@ -38,12 +43,12 @@ void display(void) {
     glVertex2f(0, 60);
   glEnd();
 
-  // Desenha o sol
-  glColor3ub(255, 255, 102); // Cor amarelo claro
-  circulo(98.0, 57.0, 6.0); // Círculo externo
+  // Desenha nuvens
+  desenhaNuvens();
 
-  glColor3ub(255, 204, 0); // Cor amarela
-  circulo(98.0, 57.0, 5.5); // Círculo central
+  // Desenha o sol
+  glColor3ub(253, 255, 231); // Cor amarela
+  circulo(65.0, 45.0, 4.5); // Círculo central
 
   // Desenha montanhas
   desenhaMontanhas();
@@ -57,9 +62,7 @@ void display(void) {
       glVertex2f(0.0, 30.0);  // Ponto superior esquerdo
   glEnd();
 
-
   //Desenha mar
-
   glColor3ub(229, 255, 254); // Cor mais clarinha
     glBegin(GL_POLYGON);
           glVertex2f(0, 0);
@@ -83,18 +86,19 @@ void display(void) {
           glVertex2f(100, 9.7);
           glVertex2f(100, 0);
     glEnd();
-  
 
-  // Desenha arvores
-  // Desenha gramas
-  // Desenha flores
+  //Desenha Vegetação
+  desenhaVegetacao();
+
+  //Desenha o farol
+
+
+  //Desenha o steven;
+
+  
 
   glFlush(); 
 }
-
-
-
-
 
 // Função para desenhar um círculo
 void circulo(float x, float y, float raio) {
@@ -106,6 +110,30 @@ void circulo(float x, float y, float raio) {
     }
     glEnd();
 }
+
+//Função para fazer um semi circulo
+  //TRUE para o semi circulo voltado para cima e FALSE para baixo
+void semiCirculo(float x, float y, float raio, int voltadoParaCima) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y); // Centro do semicírculo
+
+    if (voltadoParaCima) {
+        // Desenha o semicírculo voltado para cima (de 0 a PI)
+        for (int i = 0; i <= 50; i++) {
+            float angulo = PI * i / 50; 
+            glVertex2f(x + (raio * cosf(angulo)), y + (raio * sinf(angulo)));
+        }
+    } else {
+        // Desenha o semicírculo voltado para baixo (de PI a 2PI)
+        for (int i = 50; i <= 100; i++) {
+            float angulo = 2.0 * PI * i / 100; 
+            glVertex2f(x + (raio * cosf(angulo)), y + (raio * sinf(angulo)));
+        }
+    }
+
+    glEnd();
+}
+
 
 void desenhaMontanhas(){
 //A pontiaguda do meio
@@ -184,4 +212,221 @@ void desenhaMontanhas(){
           glVertex2f(90.1, 33.5);
           glVertex2f(88, 30);
         glEnd();
+}
+
+
+
+
+void desenhaNuvens(){
+
+  //Listras no ceú
+    glBegin(GL_TRIANGLES);
+      glColor3ub(176, 225, 255);
+      glVertex2f(0, 60);   
+      glVertex2f(5, 60);  
+      glVertex2f(0, 45);
+
+      
+      glVertex2f(100, 60);   
+      glVertex2f(100, 45);  
+      glVertex2f(85, 60);
+     
+      glVertex2f(55, 60);   
+      glVertex2f(56, 60);  
+      glVertex2f(52, 50);
+
+      glVertex2f(23, 60);   
+      glVertex2f(26, 60);  
+      glVertex2f(19, 50);
+      
+    
+    glEnd();
+
+
+
+
+
+  //Nuvem 1
+    glColor3ub(210, 231, 236);
+      semiCirculo(9.8, 53.5, 2.5, FALSE);
+      semiCirculo(15.2, 53.5, 2.5, FALSE);
+    
+    glColor3ub(255, 255, 255);
+      semiCirculo(10, 52.5, 2.5, TRUE);
+      semiCirculo(15, 52.5, 2.5, TRUE);
+  
+    //base quadrada de sombra
+    
+    glBegin(GL_QUADS);
+      //parte de baixo um tom de cinza
+      glColor3ub(210, 231, 236);
+      glVertex2f(10.0, 51);   // Ponto inferior esquerdo
+      glVertex2f(15, 51);  // Ponto inferior direito
+      glVertex2f(15, 53.5); // Ponto superior direito
+      glVertex2f(10, 53.5);  // Ponto superior esquerdo
+
+      //parte de cima branca
+      glColor3ub(255, 255, 255);
+      glVertex2f(10.0, 52.5);   // Ponto inferior esquerdo
+      glVertex2f(15, 52.5);  // Ponto inferior direito
+      glVertex2f(15, 55); // Ponto superior direito
+      glVertex2f(10, 55);  // Ponto superior esquerdO
+      
+    glEnd();
+
+  //Nuvem 2
+    glColor3ub(255, 255, 255);
+      semiCirculo(30, 50, 6, TRUE);
+      semiCirculo(40, 50, 8, TRUE);
+    
+  //Nuvem 3
+    glColor3ub(254, 254, 253);
+      semiCirculo(4, 44, 4, TRUE);
+      semiCirculo(9, 43, 3, TRUE);
+  
+  //Nuvem 4
+    glColor3ub(255, 255, 255);
+      semiCirculo(48.6, 35.2, 2.5, TRUE);
+      semiCirculo(43, 34.5, 5, TRUE);
+  
+  //Nuvem 5(em baixo do Sol)
+    glColor3ub(255, 255, 255);
+      semiCirculo(63, 35, 2, TRUE);
+      semiCirculo(67, 35, 3, TRUE);
+
+  //Nuvem 6
+    glColor3ub(255, 255, 255);
+      semiCirculo(85, 47, 7, TRUE);
+      semiCirculo(93, 49, 7, TRUE);
+
+  //Mini nuvens
+    glColor3ub(255, 255, 255);
+      circulo(3, 59, 0.4);
+      circulo(1, 57, 0.4);
+
+      semiCirculo(20, 45.7, 0.4, TRUE);
+      semiCirculo(22, 46, 0.6, TRUE);
+
+      //semiCirculo(54, 44, 0.6, TRUE);
+      //semiCirculo(53, 44, 0.8, TRUE);
+
+      semiCirculo(74, 55, 0.6, TRUE);
+      semiCirculo(75, 55, 0.8, TRUE);
+      semiCirculo(76, 55, 0.6, TRUE);
+
+
+      //semiCirculo(61, 53, 0.8, TRUE);
+      //semiCirculo(62, 53, 0.6, TRUE);
+
+            
+      semiCirculo(50, 56, 0.7, TRUE);
+
+      semiCirculo(90, 57, 0.7, TRUE);
+      circulo(98, 56, 0.5);
+
+      semiCirculo(40, 46, 0.7, TRUE);
+
+}
+
+void desenhaGrama(float x, float y){
+    semiCirculo(x, y, 1.5, TRUE);
+    semiCirculo(x - 1.5, y, 1, TRUE);
+    semiCirculo(x + 1.5, y, 0.8, TRUE);
+}
+
+void desenhaFlor(float x, float y){
+  
+  //Rosa mais claro pra petola
+  glColor3ub(243, 154, 181);
+  //Superior
+    circulo(x, y + 0.7, 0.7);
+  //Inferior
+  circulo(x, y - 0.7, 0.7);
+
+  //Esquerdo
+  circulo(x-0.7, y, 0.7);
+  //Direita
+  circulo(x+0.7, y, 0.7); 
+
+  //Meio
+  glColor3ub(237, 86, 155); //Rosa mais escuro para o meio da flor
+  circulo(x, y, 0.3);
+}
+
+
+void desenhaFlorVirada(float x, float y){
+
+  //Rosa para petolas
+  glColor3ub(242, 137, 155);
+
+
+  //Superior esquerdo
+  circulo(x-0.5, y + 0.5, 0.7);
+  //Superior direito
+  circulo(x+0.5, y + 0.5, 0.7);
+
+  //Inferior esquerdo
+  circulo(x-0.5, y - 0.5, 0.7);
+  //Infferior direito
+  circulo(x+0.5, y - 0.5, 0.7); 
+
+  //Meio
+  glColor3ub(237, 86, 155); //Rosa mais escuro para o meio da flor
+  circulo(x, y, 0.3);
+}
+
+
+void desenhaVegetacao(){
+
+  //Matinhos na montanha esquerda
+  glColor3ub(155, 181, 147);
+  desenhaGrama(5, 33);
+  desenhaGrama(9, 37);
+  desenhaGrama(15, 31);
+
+  //desenhaGrama(11.2,42);
+  //desenhaGrama(24,36.5);
+  
+  //Matinhos na montanha direita
+  glColor3ub(155, 181, 147);
+  desenhaGrama(78, 35);
+  desenhaGrama(90, 39);
+  desenhaGrama(85, 43);
+
+  //Matinhos montanha do meio
+  glColor3ub(155, 181, 147);
+  desenhaGrama(49, 30);
+  desenhaGrama(38, 30);
+  desenhaGrama(32, 36);
+
+  //Flores na montanha direita
+  desenhaFlor(90, 43);
+  desenhaFlorVirada(85, 32);
+  desenhaFlorVirada(72, 34);
+  desenhaFlorVirada(80, 40);
+
+  //Flores na montanha do meio
+  desenhaFlor(45,34);
+  desenhaFlor(54,32);
+
+  desenhaFlorVirada(30,40);
+  desenhaFlorVirada(37,35);
+
+  //Flores na montanha da esquerda
+  desenhaFlor(10, 32);
+  desenhaFlor(21, 33);
+  desenhaFlor(3, 38);
+  desenhaFlor(15, 36);
+
+  desenhaFlorVirada(5,43.5);
+  desenhaFlorVirada(18,40);
+  desenhaFlorVirada(29,33);
+}
+
+void desenhaAlvo(){
+
+
+
+
+
 }
