@@ -11,6 +11,8 @@ void semiCirculo(float x, float y, float raio, int voltadoParaCima);
 void desenhaMontanhas();
 void desenhaNuvens();
 void desenhaVegetacao();
+void desenhaAlvo();
+void drawStevePizza(float x, float y, float scale);
 void display(void);
 
 
@@ -31,7 +33,7 @@ int main(int argc, char** argv){
 void display(void) {
   glClear(GL_COLOR_BUFFER_BIT); // Limpa a janela de visualização com a cor de fundo especificada
 
-  // Cor do Céu
+  // Desenha o Céu
   glBegin(GL_QUADS);
     // Uma cor mais clara de azul em baixo
     glColor3ub(222, 241, 255);
@@ -75,7 +77,7 @@ void display(void) {
           glVertex2f(100, 0);
     glEnd();
 
-    glColor3ub(85, 194, 249); // Cor mais clarinha
+    glColor3ub(85, 194, 249); // Cor Escura
     glBegin(GL_POLYGON);
           glVertex2f(0, 0);
           glVertex2f(0, 12);
@@ -89,12 +91,11 @@ void display(void) {
 
   //Desenha Vegetação
   desenhaVegetacao();
+  
+  //Desenha Steve Pizza
+  drawStevePizza(20, 25, 10);
 
-  //Desenha o farol
-
-
-  //Desenha o steven;
-
+  //Desenha Steven
   
 
   glFlush(); 
@@ -242,10 +243,6 @@ void desenhaNuvens(){
     
     glEnd();
 
-
-
-
-
   //Nuvem 1
     glColor3ub(210, 231, 236);
       semiCirculo(9.8, 53.5, 2.5, FALSE);
@@ -375,7 +372,6 @@ void desenhaFlorVirada(float x, float y){
   circulo(x, y, 0.3);
 }
 
-
 void desenhaVegetacao(){
 
   //Matinhos na montanha esquerda
@@ -423,10 +419,164 @@ void desenhaVegetacao(){
   desenhaFlorVirada(29,33);
 }
 
-void desenhaAlvo(){
+void drawStevePizza(float x, float y, float scale) {
+    // Fatia de pizza (triângulo com a base para cima)
+    
+    // Borda alaranjada (casca da pizza)
+    glColor3f(1.0, 0.5, 0.0); // Cor alaranjada da borda
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x - 0.2 * scale, y + 0.4 * scale);  // Ponto esquerdo da base
+    glVertex2f(x + 0.0 * scale, y + 0.4 * scale);  // Ponto direito da base
+    glVertex2f(x + 0.0 * scale, y - 0.4 * scale);  // Ponto inferior (ponta da pizza)
+    glEnd();
 
+    // Parte interna da pizza (amarela)
+    glColor3f(1.0, 0.9, 0.3); // Cor amarela da pizza
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x - 0.18 * scale, y + 0.38 * scale);  // Ponto esquerdo da base (um pouco menor que a borda)
+    glVertex2f(x + 0.18 * scale, y + 0.38 * scale);  // Ponto direito da base
+    glVertex2f(x + 0.0 * scale, y - 0.35 * scale);   // Ponto inferior (ponta da pizza, também menor)
+    glEnd();
 
+    // Borda recheada na parte de cima da pizza
+    glColor3f(1.0, 0.7, 0.2); // Cor da borda recheada (uma tonalidade mais clara)
+    glBegin(GL_QUADS);
+    glVertex2f(x - 0.2 * scale, y + 0.35 * scale);   // Ponto inferior esquerdo da borda recheada
+    glVertex2f(x + 0.19 * scale, y + 0.35 * scale);  // Ponto inferior direito da borda recheada
+    glVertex2f(x + 0.14 * scale, y + 0.45 * scale);  // Ponto superior direito da borda recheada
+    glVertex2f(x - 0.25 * scale, y + 0.45 * scale);  // Ponto superior esquerdo da borda recheada
+    glEnd();
 
+    // Oculos escuros - lente esquerda
+    glColor3f(0.0, 0.0, 0.0); // Cor dos óculos (preto)
+    glBegin(GL_QUADS);
+    glVertex2f(x - 0.1 * scale, y + 0.15 * scale);  // Ponto inferior esquerdo do óculo esquerdo
+    glVertex2f(x + 0.01 * scale, y + 0.15 * scale); // Ponto inferior direito do óculo direito
+    glVertex2f(x + 0.01 * scale, y + 0.10 * scale); // Ponto superior direito do óculo direito
+    glVertex2f(x - 0.1 * scale, y + 0.10 * scale);  // Ponto superior esquerdo do óculo esquerdo
+    glEnd();
 
+    // Oculos escuros - lente direita
+    float offsetX = 0.15 * scale;
+    glBegin(GL_QUADS);
+    glVertex2f(x - 0.1 * scale + offsetX, y + 0.15 * scale);  // Ponto inferior esquerdo
+    glVertex2f(x + 0.01 * scale + offsetX, y + 0.15 * scale); // Ponto inferior direito
+    glVertex2f(x + 0.01 * scale + offsetX, y + 0.10 * scale); // Ponto superior direito
+    glVertex2f(x - 0.1 * scale + offsetX, y + 0.10 * scale);  // Ponto superior esquerdo
+    glEnd();
 
+    // Lentes dos óculos
+    glColor3f(0.0, 0.0, 0.0);
+    semiCirculo(x - 0.04 * scale, y + 0.15 * scale, 0.08 * scale, 0);
+    semiCirculo(x + 0.1 * scale, y + 0.15 * scale, 0.08 * scale, 0);
+
+    // Desenha um retângulo para a perna do óculos
+    glColor3f(0.0, 0.0, 0.0); // Cor da perna (preto)
+    glBegin(GL_QUADS);
+    glVertex2f(x - 0.15 * scale, y + 0.13 * scale);  // Ponto inferior esquerdo da perna
+    glVertex2f(x - 0.1 * scale, y + 0.13 * scale);   // Ponto inferior direito da perna
+    glVertex2f(x - 0.1 * scale, y + 0.11 * scale);   // Ponto superior direito da perna
+    glVertex2f(x - 0.15 * scale, y + 0.11 * scale);  // Ponto superior esquerdo da perna
+    glEnd();
+
+    // Contorno superior do sorriso (semicírculo)
+    glColor3f(0.0, 0.0, 0.0); // Cor da linha do contorno da boca
+    glBegin(GL_LINE_STRIP);
+    for (int i = 0; i <= 100; i++) {
+        float theta = PI * i / 100;  // Ângulo para desenhar o semicírculo
+        float smileX = 0.05 * scale * cos(theta); // Raio maior no eixo x para o sorriso
+        float smileY = 0.03 * scale * sin(theta); // Raio menor no eixo y (para a largura da boca)
+        glVertex2f(x + smileX, y - smileY);  // Ajusta a posição vertical da boca para baixo
+    }
+    glEnd();
+
+    // Parte interna da boca (preenchimento)
+    glColor3f(0.0, 0.0, 0.0); // Cor vermelha escura para a parte interna da boca
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y); // Centro do preenchimento da boca
+    for (int i = 0; i <= 100; i++) {
+        float theta = PI * i / 100;  // Ângulo para desenhar o semicírculo
+        float fillX = 0.05 * scale * cos(theta); // Raio maior no eixo x para o preenchimento
+        float fillY = 0.03 * scale * sin(theta); // Raio menor no eixo y
+        glVertex2f(x + fillX, y - fillY);  // Ajusta a posição vertical da boca preenchida
+    }
+    glEnd();
+
+    // Língua (semicírculo menor dentro da boca)
+    glColor3f(1.0, 0.0, 0.0); // Cor da língua (vermelho vivo)
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y - 0.01 * scale); // Centro da língua
+    for (int i = 0; i <= 100; i++) {
+        float theta = PI * i / 100;  // Ângulo para desenhar o semicírculo da língua
+        float tongueX = 0.03 * scale * cos(theta); // Raio menor para a língua
+        float tongueY = 0.015 * scale * sin(theta); // Altura da língua
+        glVertex2f(x + tongueX, y - 0.01 * scale - tongueY); // Ajuste da posição vertical para colocar dentro da boca
+    }
+    glEnd();
 }
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

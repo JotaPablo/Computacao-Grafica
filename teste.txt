@@ -1,0 +1,68 @@
+void Retangulo(float xI, float xF, float yI, float yF){
+
+  glBegin(GL_QUADS);
+    glVertex2f(xI, yI);
+    glVertex2f(xF, yI);
+    glVertex2f(xF, yF);
+    glVertex2f(xI, yF);
+  glEnd();
+}
+void desenhaSteven(int x, int y){
+
+  //desenha sandalias
+  glColor3ub(246, 97, 121);
+    //esquerda
+    Retangulo(x-1, x-0.25, y, y +0.15);
+    //direita
+    Retangulo(x+0.25, x + 1, y, y +0.15);
+  
+  //desenha pé
+  glColor3ub(244, 163, 159);
+    //esquerda
+    Retangulo(x-1, x-0.25, y+0.15, y +0.75);
+    //direita
+    Retangulo(x+0.25, x + 1, y+0.15, y +0.75);
+
+  //desenha manga (calças)
+    glColor3ub(86, 167, 201);
+    //esquerda
+    Retangulo(x-1, x-0.25, y+0.5, y +0.70);
+    //direita
+    Retangulo(x+0.25, x + 1, y+0.5, y +0.70);
+
+  
+  //desenha calça(pernas)
+    glColor3ub(26, 109, 177);
+    //esquerda
+    Retangulo(x-1, x-0.25, y+0.70, y +2.20);
+    //direita
+    Retangulo(x+0.25, x + 1, y+0.70, y +2.20);
+  
+  //desenha calça(base)
+    Retangulo(x-1, x+1, y+2.10, y + 2.60);
+
+  //desenha camisa(base)
+    glColor3ub(255, 83, 119);
+    Retangulo(x-1, x+1, y+2.60, y + 4.60);
+
+  //desenha mangas camisas
+    //esquerda
+    Retangulo(x-1.6, x-1, y+4.10, y + 4.60);
+    //direita
+    Retangulo(x+1, x+1.6, y+4.10, y + 4.60);
+
+  //desenha braços
+    glColor3ub(249, 162, 169);
+    //esquerda
+    Retangulo(x-1.6, x-1, y+3, y + 4.10);
+    //direita
+    Retangulo(x+1, x+1.6, y+3, y + 4.10);
+
+  //desenha mão
+    //esquerda
+    circulo(x-1.3, y + 2.8, 0.3);
+    //direita
+    circulo(x+1.3, y + 2.8, 0.3);
+
+  //Cabeça(base)
+    circulo()
