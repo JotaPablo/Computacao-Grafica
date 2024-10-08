@@ -14,6 +14,7 @@ void desenhaVegetacao();
 void desenhaAlvo();
 void drawStevePizza(float x, float y, float scale);
 void display(void);
+void desenharSteven(float scale, float translateX, float translateY);
 
 
 int main(int argc, char** argv){
@@ -91,11 +92,15 @@ void display(void) {
 
   //Desenha Vegetação
   desenhaVegetacao();
-  
-  //Desenha Steve Pizza
+
+   //Desenha Steve Pizza
   drawStevePizza(20, 25, 10);
 
   //Desenha Steven
+  desenharSteven(15, 80, 40);
+
+ 
+  
   
 
   glFlush(); 
@@ -419,6 +424,233 @@ void desenhaVegetacao(){
   desenhaFlorVirada(29,33);
 }
 
+
+void drawCircle(float cx, float cy, float r, int num_segments);
+
+
+
+// Função para desenhar um retângulo arredondado (com círculos nas bordas)
+void drawRoundedRect(float x1, float y1, float x2, float y2, float radius) {
+    // Ajuste o raio para garantir que ele não ultrapasse o tamanho do retângulo
+    float rectWidth = x2 - x1;
+    float rectHeight = y2 - y1;
+
+    // Limita o raio para não ser maior que metade da largura ou altura do retângulo
+    if (radius > rectWidth / 2) radius = rectWidth / 2;
+    if (radius > rectHeight / 2) radius = rectHeight / 2;
+
+    // Desenhar o retângulo central sem as bordas arredondadas
+    glBegin(GL_QUADS);
+    glVertex2f(x1 + radius, y1);
+    glVertex2f(x2 - radius, y1);
+    glVertex2f(x2 - radius, y2);
+    glVertex2f(x1 + radius, y2);
+    glEnd();
+
+    // Desenhar os círculos nas bordas para arredondar
+    drawCircle(x1 + radius, y1 + radius, radius, 50);
+    drawCircle(x2 - radius, y1 + radius, radius, 50);
+    drawCircle(x1 + radius, y2 - radius, radius, 50);
+    drawCircle(x2 - radius, y2 - radius, radius, 50);
+
+    // Desenhar os retângulos nas laterais para completar o arredondamento
+    glBegin(GL_QUADS);
+    glVertex2f(x1, y1 + radius);
+    glVertex2f(x1 + radius, y1 + radius);
+    glVertex2f(x1 + radius, y2 - radius);
+    glVertex2f(x1, y2 - radius);
+
+    glVertex2f(x2 - radius, y1 + radius);
+    glVertex2f(x2, y1 + radius);
+    glVertex2f(x2, y2 - radius);
+    glVertex2f(x2 - radius, y2 - radius);
+    glEnd();
+}
+
+
+
+
+// Função para desenhar um retângulo
+void drawRect(float x1, float y1, float x2, float y2) {
+    glBegin(GL_QUADS);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x1, y2);
+    glEnd();
+}
+
+// Função para desenhar um círculo
+void drawCircle(float cx, float cy, float r, int num_segments) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(cx, cy); // Centro do círculo
+    for (int i = 0; i <= num_segments; i++) {
+        float theta = 2.0f * M_PI * i / num_segments;
+        float x = r * cosf(theta);
+        float y = r * sinf(theta);
+        glVertex2f(x + cx, y + cy);
+    }
+    glEnd();
+}
+
+// Função para desenhar uma estrela
+void drawStar(float offsetX, float offsetY) {
+    glBegin(GL_TRIANGLE_FAN);
+
+    // Cor da estrela (amarelo)
+    glColor3f(1.0, 1.0, 0.0);
+
+    // Definindo o centro da estrela
+    glVertex2f(offsetX, offsetY); // Centro da estrela em (offsetX, offsetY)
+
+    // Vértices da estrela
+    for (int i = 0; i <= 10; i++) {
+        // Cálculo do ângulo
+        float angle = i * 2 * M_PI / 10; // 10 vértices (5 pontas)
+        
+        // Raio da estrela
+        float radius = (i % 2 == 0) ? 0.07 : 0.02; // Raio maior 0.1, menor 0.03
+
+        // Calculando as coordenadas x e y
+        float x = radius * cos(angle) + offsetX; // Adiciona offsetX
+        float y = radius * sin(angle) + offsetY; // Adiciona offsetY
+        
+        glVertex2f(x, y); // Adiciona o vértice calculado
+    }
+
+    glEnd();
+}
+
+void desenharSteven(float scale, float translateX, float translateY){
+
+    // Aplicando translação e escala
+    glPushMatrix(); // Salva o estado atual da matriz de transformação
+    glTranslatef(translateX, translateY, 0.0); // Movimenta o personagem
+    glScalef(scale, scale, 1.0); // Aplica a escala
+
+
+    // Corpo (retângulo arredondado)
+    glColor3f(1.0, 0.5, 0.5); // Cor rosada para a camiseta
+    drawRoundedRect(-0.1, 0.1, 0.1, 0.5, 0.05); // Corpo com bordas arredondadas
+    
+    
+
+     // Círculos de transição manga-corpo
+    glColor3f(1.0, 0.5, 0.5); // Rosa para os círculos
+    drawCircle(-0.085, 0.46, 0.05, 50); // Circulo de transição esquerdo
+    drawCircle(0.085, 0.46, 0.05, 50); // Circulo de transição direito
+
+    glColor3f(0.0, 0.0, 0.0); // Cor do cabelo
+    drawCircle(-0.08, 0.62, 0.08, 50); // Mecha esquerda
+    drawCircle(0.08, 0.62, 0.08, 50);  // Mecha espelhada no lado direito
+    
+
+    // Cabeça (círculo)
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele
+    drawCircle(0.0, 0.6, 0.12, 50); // Cabeça
+
+
+
+    // Orelha 
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele para a orelha
+    drawCircle(-0.12, 0.62, 0.03, 50); // Orelha esquerda
+    drawCircle(0.12, 0.62, 0.03, 50); // Orelha direita
+
+
+    // Cabelo (círculos)
+    glColor3f(0.0, 0.0, 0.0); // Cor do cabelo
+    drawCircle(0.0, 0.74, 0.08, 50);
+    drawCircle(0.0, 0.78, 0.08, 50); // Círculo central
+    drawCircle(-0.07, 0.75, 0.07, 50); // Círculo esquerdo
+    drawCircle(0.07, 0.75, 0.07, 50); // Círculo direito
+    drawCircle(-0.1, 0.69, 0.06, 50); // Círculo mais para a esquerda
+    drawCircle(0.1, 0.69, 0.06, 50); // Círculo mais para a direita
+    drawCircle(-0.11, 0.67, 0.05, 50);
+    drawCircle(0.11, 0.67, 0.05, 50);
+
+    // Sobrancelhas
+    glColor3f(0.0, 0.0, 0.0);
+    semiCirculo(0.05, 0.625, 0.025, 1);
+    semiCirculo(-0.05, 0.625, 0.025, 1);
+
+    // Olhos (ajuste a coordenada y)
+    glColor3f(1.0, 1.0, 1.0); // Branco
+    drawCircle(-0.05, 0.58, 0.035, 50); // Olho esquerdo (y ajustado)
+    drawCircle(0.05, 0.58, 0.035, 50);  // Olho direito (y ajustado)
+
+    // Pupilas (ajuste a coordenada y)
+    glColor3f(0.0, 0.0, 0.0); // Preto
+    drawCircle(-0.06, 0.56, 0.013, 50); // Pupila esquerda (y ajustado)
+    drawCircle(0.035, 0.56, 0.013, 50);  // Pupila direita (y ajustado)
+
+    // Contorno superior do sorriso (semicírculo)
+    glColor3f(0.0, 0.0, 0.0); // Cor da linha do contorno da boca
+    glBegin(GL_LINE_STRIP);
+    for (int i = 0; i <= 100; i++) {
+        float theta = M_PI * i / 100; // Ângulo para desenhar o semicírculo
+        float x = 0.05 * cos(theta);  // Raio maior no eixo x para o sorriso
+        float y = 0.03 * sin(theta);  // Raio menor no eixo y (para a largura da boca)
+        glVertex2f(x, 0.52 - y);      // Ajusta a posição vertical da boca
+    }
+    glEnd();
+
+    // Parte interna da boca (preenchimento)
+    glColor3f(0.5, 0.0, 0.0); // Cor preta para a parte interna da boca
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(0.0, 0.51);  // Centro do preenchimento da boca
+    for (int i = 0; i <= 100; i++) {
+        float theta = M_PI * i / 100; // Ângulo para desenhar o semicírculo
+        float x = 0.05 * cos(theta);  // Raio maior no eixo x para o preenchimento
+        float y = 0.03 * sin(theta);  // Raio menor no eixo y
+        glVertex2f(x, 0.51 - y);      // Ajusta a posição vertical da boca preenchida
+    }
+    glEnd();
+
+    // Dentes 
+    glColor3f(1.0, 1.0, 1.0); // Branco para os dentes
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(0.0, 0.52);  // Centro dos dentes
+    for (int i = 0; i <= 100; i++) {
+        float theta = M_PI * i / 100; // Ângulo para desenhar o semicírculo
+        float x = 0.04 * cos(theta);  // Raio para os dentes
+        float y = 0.02 * sin(theta);  // Ajuste a altura dos dentes
+        glVertex2f(x, 0.52 - y);      // Posiciona os dentes
+    }
+    glEnd();
+
+
+    // Braços (retângulos arredondados)
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele
+    drawRoundedRect(-0.18, 0.2, -0.1, 0.5, 0.02); // Braço esquerdo
+    drawRoundedRect(0.1, 0.2, 0.18, 0.5, 0.02);  // Braço direito
+
+    // Mangas (ajuste a posição e tamanho)
+    glColor3f(1.0, 0.5, 0.5); // Cor rosada da manga
+    drawRoundedRect(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
+    drawRoundedRect(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
+
+    
+    // Pernas (retângulos arredondados)
+    glColor3f(0.0, 0.0, 1.0); // Cor da calça
+    drawRoundedRect(-0.1, -0.05, 0.0, 0.2, 0.02); // Perna esquerda arredondada
+    drawRoundedRect(0.0, -0.05, 0.1, 0.2, 0.02); // Perna direita arredondada
+
+    // Ajuste na roupinha
+    glColor3f(1.0, 0.5, 0.5); // Mesma cor do corpo (camiseta)
+    drawCircle(0.0, 0.25, 0.1005, 50); // Círculo posicionado para cobrir o início das calças 
+
+    // Sandálias 
+ 
+    glColor3f(1.0, 0.5, 0.5); // Cor das sandálias
+    drawRoundedRect(-0.07, -0.04, -0.03, -0.07, 0.01); // Sandália esquerda
+    drawRoundedRect(0.03, -0.04, 0.07, -0.07, 0.01);  // Sandália direita
+
+    // Estrela  
+    drawStar(0.0,0.4); 
+
+    
+}
+
 void drawStevePizza(float x, float y, float scale) {
     // Fatia de pizza (triângulo com a base para cima)
     
@@ -519,64 +751,3 @@ void drawStevePizza(float x, float y, float scale) {
 
 
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
