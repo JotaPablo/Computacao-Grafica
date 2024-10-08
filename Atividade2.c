@@ -689,12 +689,12 @@ void desenharStevePizza(float x, float y, float scale) {
     glEnd();
 
     // Oculos escuros - lente direita
-    float offsetX = 0.15 * scale;
+    float desvioX = 0.15 * scale;
     glBegin(GL_QUADS);
-    glVertex2f(x - 0.1 * scale + offsetX, y + 0.15 * scale);  // Ponto inferior esquerdo
-    glVertex2f(x + 0.01 * scale + offsetX, y + 0.15 * scale); // Ponto inferior direito
-    glVertex2f(x + 0.01 * scale + offsetX, y + 0.10 * scale); // Ponto superior direito
-    glVertex2f(x - 0.1 * scale + offsetX, y + 0.10 * scale);  // Ponto superior esquerdo
+    glVertex2f(x - 0.1 * scale + desvioX, y + 0.15 * scale);  // Ponto inferior esquerdo
+    glVertex2f(x + 0.01 * scale + desvioX, y + 0.15 * scale); // Ponto inferior direito
+    glVertex2f(x + 0.01 * scale + desvioX, y + 0.10 * scale); // Ponto superior direito
+    glVertex2f(x - 0.1 * scale + desvioX, y + 0.10 * scale);  // Ponto superior esquerdo
     glEnd();
 
     // Lentes dos óculos
