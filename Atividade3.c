@@ -10,6 +10,27 @@
 #define PI 3.14159265358979323846
 
 #define NUM_FLORES 10
+static GLint bracoE = 0, bracoD = 0, antebracoE = 0, antebracoD = 0, maoE = 0, maoD = 0;
+
+
+// Posições do braço esquerdo
+float posicaoBracoX_E = 0.0; // Posição X inicial do braço esquerdo
+float posicaoBracoY_E =  0.0;  // Posição Y inicial do braço esquerdo
+float posicaoAntebracoX_E = 0.0;
+float posicaoAntebracoY_E =  0.0;
+float posicaoMaoX_E = 0.0;
+float posicaoMaoY_E = 0.0;
+
+// Posições do braço direito (inverte o eixo X para simetria)
+float posicaoBracoX_D = 0.0;  // Posição X inicial do braço direito
+float posicaoBracoY_D = 0.0;  // Posição Y inicial do braço direito
+float posicaoAntebracoX_D = 0.0;
+float posicaoAntebracoY_D = 0.0;
+float posicaoMaoX_D =0.0;
+float posicaoMaoY_D = 0.0;
+
+
+
 
 // Definindo a estrutura para armazenar as propriedades de cada flor
 typedef struct {
@@ -149,10 +170,35 @@ void display(void) {
 //Função de tratamento de eventos do teclado
 void Teclado(unsigned char tecla, int x, int y){
   switch (tecla) { //quando a tecla ESC (keycode=27) for pressionada
+
+        case 'q': bracoE += 5.0f; break; // Rotaciona braço esquerdo
+        case 'a': bracoE -= 5.0f; break;
+
+        // Movimento do antebraço esquerdo
+        case 'w': antebracoE += 5.0f; break; // Rotaciona antebraço esquerdo
+        case 's': antebracoE -= 5.0f; break;
+
+        // Movimento da mão esquerda
+        case 'e': maoE += 5.0f; break; // Rotaciona mão esquerda
+        case 'd': maoE -= 5.0f; break;
+
+        // Movimento do braço direito
+        case 'u': bracoD += 5.0f; break; // Rotaciona braço direito
+        case 'j': bracoD -= 5.0f; break;
+
+        // Movimento do antebraço direito
+        case 'i': antebracoD += 5.0f; break; // Rotaciona antebraço direito
+        case 'k': antebracoD -= 5.0f; break;
+
+        // Movimento da mão direita
+        case 'o': maoD += 5.0f; break; // Rotaciona mão direita
+        case 'l': maoD -= 5.0f; break;
     case 27:       //o programa deverá ser finalizado
          exit(0);
     break;
+
   }
+  glutPostRedisplay();
 }
 
 // Função para detectar e responder a teclas de movimentação
@@ -665,6 +711,147 @@ void desenharEstrela(float x, float y) {
 
     glPopMatrix(); // Restaura o estado anterior da matriz
 }
+void desenhaBracoERosa(){
+
+    // Braços (divididos em braço e antebraço)
+      glColor3ub(255, 187, 255); // Cor da pele
+
+    // Braço esquerdo superior
+    desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
+    // Mangas (ajuste a posição e tamanho)
+    glColor3ub(253, 112, 249); // Cor rosada da manga
+     desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
+
+}
+
+void desenhaAntebracoERosa(){
+
+    glColor3ub(255, 187, 255); // Cor da pele
+
+    // Braço esquerdo - antebraço
+      desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
+
+}
+
+void desenhaMaoERosa(){
+
+  glColor3ub(255, 187, 255); // Cor da pele
+
+  // Mão esquerda (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x - 0.14, y + 0.2); 
+      }
+      glEnd();
+}
+
+void desenhaBracoDRosa(){
+
+    glColor3ub(255, 187, 255); // Cor da pele
+    // Braço direito superior
+    desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
+
+    glColor3ub(253, 112, 249); // Cor rosada da manga
+    desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
+
+}
+
+void desenhaAntebracoDRosa(){
+
+    glColor3ub(255, 187, 255); // Cor da pele
+    // Braço direito - antebraço
+    desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
+
+}
+
+void desenhaMaoDRosa(){
+
+  glColor3ub(255, 187, 255); // Cor da pele
+  // Mão direita (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x + 0.14, y + 0.2); 
+      }
+      glEnd();
+
+}
+void desenhaBracoE(){
+
+    // Braços (divididos em braço e antebraço)
+      glColor3f(1.0, 0.8, 0.6); // Cor da pele
+
+    // Braço esquerdo superior
+    desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
+    // Mangas (ajuste a posição e tamanho)
+    glColor3f(1.0, 0.5, 0.5); // Cor rosada da manga
+     desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
+
+}
+
+void desenhaAntebracoE(){
+
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele
+
+    // Braço esquerdo - antebraço
+      desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
+
+}
+
+void desenhaMaoE(){
+
+  glColor3f(1.0, 0.8, 0.6); // Cor da pele
+
+  // Mão esquerda (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x - 0.14, y + 0.2); 
+      }
+      glEnd();
+}
+
+void desenhaBracoD(){
+
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele
+    // Braço direito superior
+    desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
+
+    glColor3f(1.0, 0.5, 0.5); // Cor rosada da manga
+    desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
+
+}
+
+void desenhaAntebracoD(){
+
+    glColor3f(1.0, 0.8, 0.6); // Cor da pele
+    // Braço direito - antebraço
+    desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
+
+}
+
+void desenhaMaoD(){
+
+  glColor3f(1.0, 0.8, 0.6); // Cor da pele
+  // Mão direita (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x + 0.14, y + 0.2); 
+      }
+      glEnd();
+
+}
+
 
 //Função para desenha o Steven Universo
 void desenharSteven(float x, float y, float escala) {
@@ -734,15 +921,54 @@ void desenharSteven(float x, float y, float escala) {
             glVertex2f(0.06, 0.52);  // Ponto final da linha da boca
         glEnd();
 
-        // Braços
-        glColor3ub(255, 187, 255); // Cor da pele para os braços
-        desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.5, 0.02); // Braço esquerdo
-        desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.5, 0.02);  // Braço direito
+       /*
+        // Braços (divididos em braço e antebraço)
+        glColor3ub(255, 187, 255); // Cor da pele
 
-        // Mangas
-        glColor3ub(253, 112, 249); // Cor das mangas (rosa)
-        desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda
-        desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita
+        // Braço esquerdo superior
+        desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
+
+        // Braço esquerdo - antebraço
+        desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
+
+        // Mão esquerda (círculo)
+        glBegin(GL_POLYGON);
+        for (int i = 0; i < 100; i++) {
+            float theta = 2.0f * 3.1415926f * i / 100;
+            float x = 0.05 * cosf(theta);
+            float y = 0.05 * sinf(theta);
+            glVertex2f(x - 0.14, y + 0.2); 
+        }
+        glEnd();
+
+        // Braço direito superior
+        desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
+
+        // Braço direito - antebraço
+        desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
+
+        // Mão direita (círculo)
+        glBegin(GL_POLYGON);
+        for (int i = 0; i < 100; i++) {
+            float theta = 2.0f * 3.1415926f * i / 100;
+            float x = 0.05 * cosf(theta);
+            float y = 0.05 * sinf(theta);
+            glVertex2f(x + 0.14, y + 0.2); 
+        }
+        glEnd();
+
+        // Mangas (ajuste a posição e tamanho)
+        glColor3ub(253, 112, 249); // Cor rosada da manga
+        desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
+        desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
+      */
+
+        desenhaBracoERosa();
+        desenhaAntebracoERosa();
+        desenhaMaoERosa();
+        desenhaBracoDRosa();
+        desenhaAntebracoDRosa();
+        desenhaMaoDRosa();
 
         // Pernas
         glColor3ub(252, 73, 222); // Cor da calça
@@ -847,15 +1073,109 @@ void desenharSteven(float x, float y, float escala) {
       }
       glEnd();
 
-      // Braços (retângulos arredondados)
-      glColor3f(1.0, 0.8, 0.6); // Cor da pele dos braços
-      desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.5, 0.02); // Braço esquerdo
-      desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.5, 0.02);  // Braço direito
+      /*
+      // Braços (divididos em braço e antebraço)
+      glColor3f(1.0, 0.8, 0.6); // Cor da pele
 
-      // Mangas (ajuste da posição e tamanho)
-      glColor3f(1.0, 0.5, 0.5); // Cor rosada das mangas
-      desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda
-      desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita
+      // Braço esquerdo superior
+      desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
+
+      // Braço esquerdo - antebraço
+      desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
+
+      // Mão esquerda (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x - 0.14, y + 0.2); 
+      }
+      glEnd();
+
+      // Braço direito superior
+      desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
+
+      // Braço direito - antebraço
+      desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
+
+      // Mão direita (círculo)
+      glBegin(GL_POLYGON);
+      for (int i = 0; i < 100; i++) {
+          float theta = 2.0f * 3.1415926f * i / 100;
+          float x = 0.05 * cosf(theta);
+          float y = 0.05 * sinf(theta);
+          glVertex2f(x + 0.14, y + 0.2); 
+      }
+      glEnd();
+
+      // Mangas (ajuste a posição e tamanho)
+      glColor3f(1.0, 0.5, 0.5); // Cor rosada da manga
+      desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
+      desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
+
+      */
+
+      /*
+      desenhaBracoE();
+      desenhaAntebracoE();
+      desenhaMaoE();
+      desenhaBracoD();
+      desenhaAntebracoD();
+      desenhaMaoD();
+
+      */
+
+      glPushMatrix();
+        // Transforma o braço (pai)
+        glTranslatef(posicaoBracoX_E, posicaoBracoY_E, 0); // Translação do braço
+        glRotatef(bracoE, 0, 0, 1);               // Rotação do braço
+
+        desenhaBracoE();
+
+        glPushMatrix();
+            // Transforma o antebraço (intermediário)
+            glTranslatef(posicaoAntebracoX_E, posicaoAntebracoY_E, 0); // Translação do antebraço
+            glRotatef(antebracoE, 0, 0, 1);                   // Rotação do antebraço
+
+            desenhaAntebracoE();
+
+            glPushMatrix();
+                // Transforma a mão (último)
+                glTranslatef(posicaoMaoX_E, posicaoMaoY_E, 0); // Translação da mão
+                glRotatef(maoE, 0, 0, 1);             // Rotação da mão
+
+                desenhaMaoE();
+            glPopMatrix(); // Termina a transformação da mão
+
+        glPopMatrix(); // Termina a transformação do antebraço
+
+
+
+      glPopMatrix(); // Termina a transformação do braço
+
+      glPushMatrix();
+        glTranslatef(posicaoBracoX_D, posicaoBracoY_D, 0); // Define a posição inicial do braço direito
+        glRotatef(bracoD, 0, 0, 1); // Rotaciona o braço direito
+        desenhaBracoD();
+
+        glPushMatrix();
+            glTranslatef(posicaoAntebracoX_D, posicaoAntebracoY_D, 0); // Conecta o antebraço direito
+            glRotatef(antebracoD, 0, 0, 1); // Rotaciona o antebraço direito
+            desenhaAntebracoD();
+
+            glPushMatrix();
+                glTranslatef(posicaoMaoX_D, posicaoMaoY_D, 0); // Conecta a mão direita
+                glRotatef(maoD, 0, 0, 1); // Rotaciona a mão direita
+                desenhaMaoD();
+            glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+
+
+
 
       // Pernas (retângulos arredondados)
       glColor3f(0.0, 0.0, 1.0); // Cor das calças (azul)
