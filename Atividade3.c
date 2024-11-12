@@ -10,24 +10,25 @@
 #define PI 3.14159265358979323846
 
 #define NUM_FLORES 10
-static GLint bracoE = 0, bracoD = 0, antebracoE = 0, antebracoD = 0, maoE = 0, maoD = 0;
+static GLint bracoE = 0.0, bracoD = 0.0, antebracoE = 0.0, antebracoD = 0.0, maoE = 0.0, maoD = 0.0;
 
 
-// Posições do braço esquerdo
-float posicaoBracoX_E = 0.0; // Posição X inicial do braço esquerdo
-float posicaoBracoY_E =  0.0;  // Posição Y inicial do braço esquerdo
-float posicaoAntebracoX_E = 0.0;
-float posicaoAntebracoY_E =  0.0;
-float posicaoMaoX_E = 0.0;
-float posicaoMaoY_E = 0.0;
+// Posições do braço esquerdo (ajustadas para simular a posição real do braço)
+float posicaoBracoX_E = 0.0;  // Distância do ombro (braço esquerdo)
+float posicaoBracoY_E = 0.0;  // Posição do braço no eixo Y
+float posicaoAntebracoX_E = 0.0; // Distância do ombro para o antebraço
+float posicaoAntebracoY_E = 0.0; // Exemplo de posição para o antebraço
+float posicaoMaoX_E = 0.0; // Posição da mão
+float posicaoMaoY_E = 0.0; // Posição da mão
 
-// Posições do braço direito (inverte o eixo X para simetria)
-float posicaoBracoX_D = 0.0;  // Posição X inicial do braço direito
-float posicaoBracoY_D = 0.0;  // Posição Y inicial do braço direito
-float posicaoAntebracoX_D = 0.0;
-float posicaoAntebracoY_D = 0.0;
-float posicaoMaoX_D =0.0;
-float posicaoMaoY_D = 0.0;
+// Posições do braço direito (simetria, invertendo eixo X)
+float posicaoBracoX_D = 0.0;  // Distância do ombro (braço direito)
+float posicaoBracoY_D = 0.0;   // Posição do braço no eixo Y
+float posicaoAntebracoX_D = 0.0; // Distância do ombro para o antebraço
+float posicaoAntebracoY_D = 0.0; // Exemplo de posição para o antebraço
+float posicaoMaoX_D = 0.0;  // Posição da mão
+float posicaoMaoY_D = 0.0;  // Posição da mão
+
 
 
 
@@ -1073,106 +1074,66 @@ void desenharSteven(float x, float y, float escala) {
       }
       glEnd();
 
-      /*
-      // Braços (divididos em braço e antebraço)
-      glColor3f(1.0, 0.8, 0.6); // Cor da pele
-
-      // Braço esquerdo superior
-      desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
-
-      // Braço esquerdo - antebraço
-      desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
-
-      // Mão esquerda (círculo)
-      glBegin(GL_POLYGON);
-      for (int i = 0; i < 100; i++) {
-          float theta = 2.0f * 3.1415926f * i / 100;
-          float x = 0.05 * cosf(theta);
-          float y = 0.05 * sinf(theta);
-          glVertex2f(x - 0.14, y + 0.2); 
-      }
-      glEnd();
-
-      // Braço direito superior
-      desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
-
-      // Braço direito - antebraço
-      desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
-
-      // Mão direita (círculo)
-      glBegin(GL_POLYGON);
-      for (int i = 0; i < 100; i++) {
-          float theta = 2.0f * 3.1415926f * i / 100;
-          float x = 0.05 * cosf(theta);
-          float y = 0.05 * sinf(theta);
-          glVertex2f(x + 0.14, y + 0.2); 
-      }
-      glEnd();
-
-      // Mangas (ajuste a posição e tamanho)
-      glColor3f(1.0, 0.5, 0.5); // Cor rosada da manga
-      desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
-      desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
-
-      */
-
-      /*
-      desenhaBracoE();
-      desenhaAntebracoE();
-      desenhaMaoE();
-      desenhaBracoD();
-      desenhaAntebracoD();
-      desenhaMaoD();
-
-      */
-
-      glPushMatrix();
-        // Transforma o braço (pai)
-        glTranslatef(posicaoBracoX_E, posicaoBracoY_E, 0); // Translação do braço
-        glRotatef(bracoE, 0, 0, 1);               // Rotação do braço
-
-        desenhaBracoE();
-
-        glPushMatrix();
-            // Transforma o antebraço (intermediário)
-            glTranslatef(posicaoAntebracoX_E, posicaoAntebracoY_E, 0); // Translação do antebraço
-            glRotatef(antebracoE, 0, 0, 1);                   // Rotação do antebraço
-
-            desenhaAntebracoE();
-
-            glPushMatrix();
-                // Transforma a mão (último)
-                glTranslatef(posicaoMaoX_E, posicaoMaoY_E, 0); // Translação da mão
-                glRotatef(maoE, 0, 0, 1);             // Rotação da mão
-
-                desenhaMaoE();
-            glPopMatrix(); // Termina a transformação da mão
-
-        glPopMatrix(); // Termina a transformação do antebraço
+      // Transformação para o braço esquerdo
+      glPushMatrix(); // Salva o estado atual da matriz
+          // A posição do braço é dada pela translação, colocando o ponto de origem no local correto
+          glTranslatef(-0.145, 0.42, 0); // Translação do braço para a posição desejada
+          glRotatef(bracoE, 0, 0, 1); // Rotação do braço
+          glTranslatef(0.145, -0.42, 0);
 
 
+          desenhaBracoE(); // Desenha o braço esquerdo
 
-      glPopMatrix(); // Termina a transformação do braço
+          // Transforma o antebraço
+          glPushMatrix(); // Salva o estado da matriz para o antebraço
+              glTranslatef(-0.145, 0.38, 0); // Translação do antebraço 
+              glRotatef(antebracoE, 0, 0, 1); // Rotação do antebraço 
+              glTranslatef(0.145, -0.38, 0);
 
-      glPushMatrix();
-        glTranslatef(posicaoBracoX_D, posicaoBracoY_D, 0); // Define a posição inicial do braço direito
-        glRotatef(bracoD, 0, 0, 1); // Rotaciona o braço direito
-        desenhaBracoD();
+              desenhaAntebracoE(); // Desenha o antebraço esquerdo
 
-        glPushMatrix();
-            glTranslatef(posicaoAntebracoX_D, posicaoAntebracoY_D, 0); // Conecta o antebraço direito
-            glRotatef(antebracoD, 0, 0, 1); // Rotaciona o antebraço direito
-            desenhaAntebracoD();
+              // Transforma a mão
+              glPushMatrix(); // Salva o estado da matriz para a mão
+                  glTranslatef(-0.143, 0.25, 0); // Translação relativa ao antebraço
+                  glRotatef(maoE, 0, 0, 1); // Rotação da mão
+                  glTranslatef(0.143, -0.25, 0);
 
-            glPushMatrix();
-                glTranslatef(posicaoMaoX_D, posicaoMaoY_D, 0); // Conecta a mão direita
-                glRotatef(maoD, 0, 0, 1); // Rotaciona a mão direita
-                desenhaMaoD();
-            glPopMatrix();
+                  desenhaMaoE(); // Desenha a mão esquerdad
+              glPopMatrix(); // Restaura o estado da matriz após desenhar a mão
 
-        glPopMatrix();
+          glPopMatrix(); // Restaura o estado da matriz após desenhar o antebraço
+      glPopMatrix(); // Restaura o estado da matriz após desenhar o braço esquerdo
 
-      glPopMatrix();
+
+      // Transformação para o braço direito (simetria)
+      glPushMatrix(); // Salva o estado atual da matriz
+          glTranslatef(0.145, 0.42, 0); // Translação do braço direito
+          glRotatef(bracoD, 0, 0, 1); // Rotação do braço direito
+          glTranslatef(-0.145, -0.42, 0);
+
+          desenhaBracoD(); // Desenha o braço direito
+
+          // Transforma o antebraço direito
+          glPushMatrix(); // Salva o estado da matriz para o antebraço direito
+              glTranslatef(0.145, 0.38, 0); // Translação do antebraço direito
+              glRotatef(antebracoD, 0, 0, 1); // Rotação do antebraço direito
+              glTranslatef(-0.145, -0.38, 0);
+
+              desenhaAntebracoD(); // Desenha o antebraço direito
+
+              // Transforma a mão direita
+              glPushMatrix(); // Salva o estado da matriz para a mão direita
+                  glTranslatef(0.143, 0.25, 0); // Translação relativa ao antebraço direito (positivo para a direita)
+                  glRotatef(maoD, 0, 0, 1); // Rotação da mão direita
+                  glTranslatef(-0.143, -0.25, 0); // Reverte a translação para não deslocar a posição final
+
+                  desenhaMaoD(); // Desenha a mão direita
+              glPopMatrix(); // Restaura o estado da matriz após desenhar a mão direita
+
+          glPopMatrix(); // Restaura o estado da matriz após desenhar o antebraço direito
+      glPopMatrix(); // Restaura o estado da matriz após desenhar o braço direito
+
+
 
 
 
