@@ -922,54 +922,64 @@ void desenharSteven(float x, float y, float escala) {
             glVertex2f(0.06, 0.52);  // Ponto final da linha da boca
         glEnd();
 
-       /*
-        // Braços (divididos em braço e antebraço)
-        glColor3ub(255, 187, 255); // Cor da pele
 
-        // Braço esquerdo superior
-        desenharRetanguloArredondado(-0.189, 0.35, -0.09999, 0.5, 0.02); 
+        // Transformação para o braço esquerdo
+        glPushMatrix(); // Salva o estado atual da matriz
+            // A posição do braço é dada pela translação, colocando o ponto de origem no local correto
+            glTranslatef(-0.145, 0.44, 0); // Translação do braço para a posição desejada
+            glRotatef(bracoE, 0, 0, 1); // Rotação do braço
+            glTranslatef(0.145, -0.44, 0);
 
-        // Braço esquerdo - antebraço
-        desenharRetanguloArredondado(-0.18, 0.2, -0.1, 0.4, 0.02); 
+            desenhaBracoERosa(); // Desenha o braço esquerdo com a cor rosa
 
-        // Mão esquerda (círculo)
-        glBegin(GL_POLYGON);
-        for (int i = 0; i < 100; i++) {
-            float theta = 2.0f * 3.1415926f * i / 100;
-            float x = 0.05 * cosf(theta);
-            float y = 0.05 * sinf(theta);
-            glVertex2f(x - 0.14, y + 0.2); 
-        }
-        glEnd();
+            // Transforma o antebraço
+            glPushMatrix(); // Salva o estado da matriz para o antebraço
+                glTranslatef(-0.145, 0.38, 0); // Translação do antebraço 
+                glRotatef(antebracoE, 0, 0, 1); // Rotação do antebraço 
+                glTranslatef(0.145, -0.38, 0);
 
-        // Braço direito superior
-        desenharRetanguloArredondado(0.09999, 0.35, 0.189, 0.5, 0.02); 
+                desenhaAntebracoERosa(); // Desenha o antebraço esquerdo com a cor rosa
 
-        // Braço direito - antebraço
-        desenharRetanguloArredondado(0.1, 0.2, 0.18, 0.4, 0.02); 
+                // Transforma a mão
+                glPushMatrix(); // Salva o estado da matriz para a mão
+                    glTranslatef(-0.143, 0.25, 0); // Translação relativa ao antebraço
+                    glRotatef(maoE, 0, 0, 1); // Rotação da mão
+                    glTranslatef(0.143, -0.25, 0);
 
-        // Mão direita (círculo)
-        glBegin(GL_POLYGON);
-        for (int i = 0; i < 100; i++) {
-            float theta = 2.0f * 3.1415926f * i / 100;
-            float x = 0.05 * cosf(theta);
-            float y = 0.05 * sinf(theta);
-            glVertex2f(x + 0.14, y + 0.2); 
-        }
-        glEnd();
+                    desenhaMaoERosa(); // Desenha a mão esquerda com a cor rosa
+                glPopMatrix(); // Restaura o estado da matriz após desenhar a mão
 
-        // Mangas (ajuste a posição e tamanho)
-        glColor3ub(253, 112, 249); // Cor rosada da manga
-        desenharRetanguloArredondado(-0.19, 0.4, -0.08, 0.5, 0.02); // Manga esquerda arredondada
-        desenharRetanguloArredondado(0.08, 0.4, 0.19, 0.5, 0.02);   // Manga direita arredondada
-      */
+            glPopMatrix(); // Restaura o estado da matriz após desenhar o antebraço
+        glPopMatrix(); // Restaura o estado da matriz após desenhar o braço esquerdo
 
-        desenhaBracoERosa();
-        desenhaAntebracoERosa();
-        desenhaMaoERosa();
-        desenhaBracoDRosa();
-        desenhaAntebracoDRosa();
-        desenhaMaoDRosa();
+
+        // Transformação para o braço direito (simetria)
+        glPushMatrix(); // Salva o estado atual da matriz
+            glTranslatef(0.145, 0.44, 0); // Translação do braço direito
+            glRotatef(bracoD, 0, 0, 1); // Rotação do braço direito
+            glTranslatef(-0.145, -0.44, 0);
+
+            desenhaBracoDRosa(); // Desenha o braço direito com a cor rosa
+
+            // Transforma o antebraço direito
+            glPushMatrix(); // Salva o estado da matriz para o antebraço direito
+                glTranslatef(0.145, 0.38, 0); // Translação do antebraço direito
+                glRotatef(antebracoD, 0, 0, 1); // Rotação do antebraço direito
+                glTranslatef(-0.145, -0.38, 0);
+
+                desenhaAntebracoDRosa(); // Desenha o antebraço direito com a cor rosa
+
+                // Transforma a mão direita
+                glPushMatrix(); // Salva o estado da matriz para a mão direita
+                    glTranslatef(0.143, 0.25, 0); // Translação relativa ao antebraço direito (positivo para a direita)
+                    glRotatef(maoD, 0, 0, 1); // Rotação da mão direita
+                    glTranslatef(-0.143, -0.25, 0); // Reverte a translação para não deslocar a posição final
+
+                    desenhaMaoDRosa(); // Desenha a mão direita com a cor rosa
+                glPopMatrix(); // Restaura o estado da matriz após desenhar a mão direita
+
+            glPopMatrix(); // Restaura o estado da matriz após desenhar o antebraço direito
+        glPopMatrix(); // Restaura o estado da matriz após desenhar o braço direito
 
         // Pernas
         glColor3ub(252, 73, 222); // Cor da calça
@@ -1077,9 +1087,9 @@ void desenharSteven(float x, float y, float escala) {
       // Transformação para o braço esquerdo
       glPushMatrix(); // Salva o estado atual da matriz
           // A posição do braço é dada pela translação, colocando o ponto de origem no local correto
-          glTranslatef(-0.145, 0.42, 0); // Translação do braço para a posição desejada
+          glTranslatef(-0.145, 0.44, 0); // Translação do braço para a posição desejada
           glRotatef(bracoE, 0, 0, 1); // Rotação do braço
-          glTranslatef(0.145, -0.42, 0);
+          glTranslatef(0.145, -0.44, 0);
 
 
           desenhaBracoE(); // Desenha o braço esquerdo
@@ -1107,9 +1117,9 @@ void desenharSteven(float x, float y, float escala) {
 
       // Transformação para o braço direito (simetria)
       glPushMatrix(); // Salva o estado atual da matriz
-          glTranslatef(0.145, 0.42, 0); // Translação do braço direito
+          glTranslatef(0.145, 0.44, 0); // Translação do braço direito
           glRotatef(bracoD, 0, 0, 1); // Rotação do braço direito
-          glTranslatef(-0.145, -0.42, 0);
+          glTranslatef(-0.145, -0.44, 0);
 
           desenhaBracoD(); // Desenha o braço direito
 
