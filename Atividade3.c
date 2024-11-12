@@ -9,35 +9,75 @@
 #define PARA_BAIXO 180
 #define PI 3.14159265358979323846
 
+#define NUM_FLORES 10
+
+// Definindo a estrutura para armazenar as propriedades de cada flor
+typedef struct {
+    float x, y;            // Posição da flor
+    float anguloRotacao;   // Ângulo de rotação da flor
+    float escala;          // Fator de escala (mesma para x e y)
+} Flor;
+
+// Array que armazenará as flores
+Flor flores[NUM_FLORES];
+
 // Posições iniciais e escala de Steven
 float stevenPosX = 75.0; 
 float stevenPosY = 29.0; 
 float stevenEscala = 15.0;
 
+//Se o escudo está ativado
+int escudoAtivado = FALSE;
+
 // Declaração de funções para desenho de elementos
 void circulo(float x, float y, float raio);
 void semiCirculo(float x, float y, float raio, float anguloRotacao);
+void desenhaFlorClara(float x, float y, float anguloRotacao, float escala);
+void desenhaFlorEscura(float x, float y, float anguloRotacao, float escala);
+void desenhaFlores();
 void desenhaMontanhas();
 void desenhaNuvens();
 void desenhaVegetacao();
 void desenharStevePizza(float x, float y, float escala);
-void display(void);
 void desenharSteven(float x, float y, float escala);
+void display(void);
 void TeclasEspeciais(int tecla, int x, int y);
+void Teclado(unsigned char tecla, int x, int y);
+void Animar(int interacoes);
+void animarFlores();
+
+
+void inicializaFlores() {
+    flores[0] = (Flor){10.0f, 50.0f, 45.0f, 1.0f};  // Flor 1
+    flores[1] = (Flor){20.0f, 53.0f, 30.0f, 1.2f};  // Flor 2
+    flores[2] = (Flor){30.0f, 46.0f, 60.0f, 1.1f};  // Flor 3
+    flores[3] = (Flor){40.0f, 54.0f, 15.0f, 0.9f};  // Flor 4
+    flores[4] = (Flor){50.0f, 51.0f, 90.0f, 1.0f};  // Flor 5
+    flores[5] = (Flor){60.0f, 54.0f, 135.0f, 1.3f}; // Flor 6
+    flores[6] = (Flor){70.0f, 45.0f, 20.0f, 1.0f};  // Flor 7
+    flores[7] = (Flor){80.0f, 50.0f, 150.0f, 1.0f}; // Flor 8
+    flores[8] = (Flor){90.0f, 47.0f, 75.0f, 1.2f};  // Flor 9
+    flores[9] = (Flor){100.0f, 50.0f, 105.0f, 1.1f}; // Flor 10
+}
 
 int main(int argc, char** argv){
   // Inicialização e configuração da janela GLUT
   glutInit(&argc, argv);
-  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
   glutInitWindowSize (1000, 600);
   glutInitWindowPosition (0, 0);
   glutCreateWindow (argv[1]);
 
   glClearColor(1.0, 1.0, 1.0, 0.0); // Cor de fundo (branco)
   glOrtho(0.0, 100.0, 0.0, 60.0, -1.0, 1.0); // Define a área de visualização
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  inicializaFlores(); // Inicializa as flores
 
   // Funções callback para interação e renderização
+  glutKeyboardFunc(Teclado); //Trata eventos de teclado
   glutSpecialFunc(TeclasEspeciais); 
+  glutTimerFunc(30,Animar,0);
   glutDisplayFunc(display); 
   glutMainLoop(); // Loop principal da GLUT
   return 0;
@@ -99,10 +139,20 @@ void display(void) {
 
   // Desenha vegetação e personagens
   desenhaVegetacao();
+  desenhaFlores(); // Desenha as flores ao vento
   desenharStevePizza(60, 28, 12);
   desenharSteven(stevenPosX, stevenPosY, stevenEscala);
 
-  glFlush(); 
+  glutSwapBuffers(); 
+}
+
+//Função de tratamento de eventos do teclado
+void Teclado(unsigned char tecla, int x, int y){
+  switch (tecla) { //quando a tecla ESC (keycode=27) for pressionada
+    case 27:       //o programa deverá ser finalizado
+         exit(0);
+    break;
+  }
 }
 
 // Função para detectar e responder a teclas de movimentação
@@ -172,6 +222,20 @@ void semiCirculo(float x, float y, float raio, float anguloRotacao) {
     glPopMatrix();
 }
 
+// Função para desenhar todas as flores
+void desenhaFlores() {
+    for (int i = 0; i < NUM_FLORES; i++) {
+        if (i < 5) {
+            // Flores claras
+            desenhaFlorClara(flores[i].x, flores[i].y, flores[i].anguloRotacao, flores[i].escala);
+        } else {
+            // Flores escuras
+            desenhaFlorEscura(flores[i].x, flores[i].y, flores[i].anguloRotacao, flores[i].escala);
+        }
+    }
+}
+
+// Função para desenhar uma cena de montanhas com diferentes formas e texturas.
 void desenhaMontanhas(){
     // Montanha pontiaguda do meio
     glColor3ub(195, 216, 187); // Verde claro para o corpo principal da montanha
@@ -249,6 +313,7 @@ void desenhaMontanhas(){
     glEnd();
 }
 
+// Função para desenhar uma nuvem com base em dois semi-círculos e aplicar transformações de posição, rotação e escala.
 void desenhaNuvem2(float x, float y, float escala, float anguloRotacao, int inverte) {
     glPushMatrix();  // Salva a transformação
 
@@ -267,6 +332,7 @@ void desenhaNuvem2(float x, float y, float escala, float anguloRotacao, int inve
     glPopMatrix();  // Restaura a transformação
 }
 
+// Função para desenhar uma nuvem com três semi-círculos e aplicar transformações de posição, rotação e escala.
 void desenhaNuvem3(float x, float y, float escala, float anguloRotacao) {
     glPushMatrix();  // Salva a transformação
 
@@ -284,6 +350,7 @@ void desenhaNuvem3(float x, float y, float escala, float anguloRotacao) {
     glPopMatrix();  // Restaura a transformação
 }
 
+// Função para desenhar o céu com nuvens e listras, incluindo nuvens sombreadas e mini nuvens.
 void desenhaNuvens() {
   // Listras no céu
   glBegin(GL_TRIANGLES);
@@ -347,13 +414,14 @@ void desenhaGrama(float x, float y){
   glPopMatrix();  // Restaura a transformação
 }
 
-// Desenha a flor clara no ponto (x, y) com rotação
-void desenhaFlorClara(float x, float y, float anguloRotacao) {
+// Desenha a flor clara no ponto (x, y) com rotação e escala uniforme
+void desenhaFlorClara(float x, float y, float anguloRotacao, float escala) {
   glPushMatrix(); // Salva o estado atual da transformação
 
   // Translada para o centro da flor e aplica a rotação
   glTranslatef(x, y, 0.0f);
   glRotatef(anguloRotacao, 0.0f, 0.0f, 1.0f); // Rotaciona as pétalas
+  glScalef(escala, escala, 1.0f);  // Aplica a escala uniforme (mesmo valor para X e Y)
 
   // Pétalas da flor em rosa claro
   glColor3ub(243, 154, 181);
@@ -369,13 +437,14 @@ void desenhaFlorClara(float x, float y, float anguloRotacao) {
   glPopMatrix(); // Restaura o estado anterior
 }
 
-// Desenha a flor escura no ponto (x, y) com rotação
-void desenhaFlorEscura(float x, float y, float anguloRotacao) {
+// Desenha a flor escura no ponto (x, y) com rotação e escala uniforme
+void desenhaFlorEscura(float x, float y, float anguloRotacao, float escala) {
   glPushMatrix(); // Salva o estado atual da transformação
 
   // Translada para o centro da flor e aplica a rotação
   glTranslatef(x, y, 0.0f);
   glRotatef(anguloRotacao, 0.0f, 0.0f, 1.0f); // Rotaciona as pétalas
+  glScalef(escala, escala, 1.0f);  // Aplica a escala uniforme (mesmo valor para X e Y)
 
   // Pétalas da flor em rosa médio
   glColor3ub(242, 137, 155);
@@ -405,25 +474,25 @@ void desenhaVegetacao() {
   desenhaGrama(32, 36);
 
   // Flores na montanha direita
-  desenhaFlorClara(90, 43, 0);  // Flor clara
-  desenhaFlorEscura(85, 32, 45); // Flor escura
-  desenhaFlorEscura(72, 34, 45); // Flor escura
-  desenhaFlorEscura(80, 40, 45); // Flor escura
+  desenhaFlorClara(90, 43, 0, 1);  // Flor clara
+  desenhaFlorEscura(85, 32, 45, 1); // Flor escura
+  desenhaFlorEscura(72, 34, 45, 1); // Flor escura
+  desenhaFlorEscura(80, 40, 45, 1); // Flor escura
 
   // Flores na montanha do meio
-  desenhaFlorClara(45, 34, 0);  // Flor clara
-  desenhaFlorClara(54, 32, 0);  // Flor clara
-  desenhaFlorEscura(30, 40, 45); // Flor escura
-  desenhaFlorEscura(37, 35, 45); // Flor escura
+  desenhaFlorClara(45, 34, 0, 1);  // Flor clara
+  desenhaFlorClara(54, 32, 0, 1);  // Flor clara
+  desenhaFlorEscura(30, 40, 45, 1); // Flor escura
+  desenhaFlorEscura(37, 35, 45, 1); // Flor escura
 
   // Flores na montanha da esquerda
-  desenhaFlorClara(10, 32, 0);  // Flor clara
-  desenhaFlorClara(21, 33, 0);  // Flor clara
-  desenhaFlorClara(3, 38, 0);   // Flor clara
-  desenhaFlorClara(15, 36, 0);  // Flor clara
-  desenhaFlorEscura(5, 43.5, 45); // Flor escura
-  desenhaFlorEscura(18, 40, 45); // Flor escura
-  desenhaFlorEscura(29, 33, 45); // Flor escura
+  desenhaFlorClara(10, 32, 0, 1);  // Flor clara
+  desenhaFlorClara(21, 33, 0, 1);  // Flor clara
+  desenhaFlorClara(3, 38, 0, 1);   // Flor clara
+  desenhaFlorClara(15, 36, 0, 1);  // Flor clara
+  desenhaFlorEscura(5, 43.5, 45, 1); // Flor escura
+  desenhaFlorEscura(18, 40, 45, 1); // Flor escura
+  desenhaFlorEscura(29, 33, 45, 1); // Flor escura
 }
 
 // Função que desenha o StevePizza no ponto (x, y) com escala
@@ -597,6 +666,7 @@ void desenharEstrela(float x, float y) {
     glPopMatrix(); // Restaura o estado anterior da matriz
 }
 
+//Função para desenha o Steven Universo
 void desenharSteven(float x, float y, float escala) {
      // Aplicando translação e escala
     glPushMatrix(); // Salva o estado atual da matriz de transformação
@@ -807,4 +877,22 @@ void desenharSteven(float x, float y, float escala) {
   }
 
     glPopMatrix(); // Restaura o estado anterior da matriz de transformação
+}
+
+void animarFlores(){
+  for(int i = 0; i < NUM_FLORES; i++){
+      flores[i].x -= 0.1;
+
+      if(flores[i].x < -1) flores[i].x = 100.0;
+
+      flores[i].anguloRotacao += 0.5;
+  }
+
+  glutPostRedisplay(); // Redesenha a cena
+
+}
+
+void Animar(int interacoes) {
+    animarFlores();  // Chama a função de animação
+    glutTimerFunc(30, Animar, interacoes + 1);  // Chama a função novamente após 30ms
 }
