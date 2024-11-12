@@ -1172,7 +1172,7 @@ void desenharSteven(float x, float y, float escala) {
 
         glPopMatrix();
 
-    glPopMatrix();
+      glPopMatrix();
 
 
 
