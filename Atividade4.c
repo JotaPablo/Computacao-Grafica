@@ -206,6 +206,8 @@ void Teclado(unsigned char tecla, int x, int y){
                 biscoitoPosY = stevenPosY;
             }
             break;
+        case 'x': acertos += 1; break;
+        case 'z': acertos = 0; break;
     case 27:       //o programa deverá ser finalizado
          exit(0);
     break;
