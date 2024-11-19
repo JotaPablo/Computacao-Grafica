@@ -8,6 +8,13 @@
 #define PARA_CIMA 0
 #define PARA_BAIXO 180
 #define PI 3.14159265358979323846
+//Referentes ao objeto a ser lançado
+#define COOLDOWN 5 //Em segundos
+int HABILITADO = TRUE; //Variavel global para controlar pode ser disparado ou não
+int ultimaIteracao = 0; //Variavel global de quando foi a ultima vez que o objeto foi disparado
+int interacoesGLOBAL = 0; //Variavel global para quantas interações houve na animação
+float biscoitoPosX = 0.0;
+float biscoitoPosY = 0.0;
 
 #define NUM_FLORES 10
 static GLint bracoE = 0.0, bracoD = 0.0, antebracoE = 0.0, antebracoD = 0.0, maoE = 0.0, maoD = 0.0;
@@ -30,13 +37,13 @@ float PizzaInverte = FALSE; // Define se a pizza estará desenhada para esquerda
 float deslocamentoX = 0.0; //Variavel global para modificar a posição x do Steve Pizza
 float deslocamentoY = 0.0; //Variavel global para modificar a posição x do Steve Pizza
 
+int acertos = 0; // Variavel global para verificar quantas colisões houve entro o objeto e o alvo
+
 // Posições iniciais e escala de Steven
 float stevenPosX = 65.0; 
 float stevenPosY = 45.0; 
 float stevenEscala = 5.0;
 
-//Se o escudo está ativado
-int escudoAtivado = FALSE;
 
 // Declaração de funções para desenho de elementos
 void circulo(float x, float y, float raio);
@@ -49,6 +56,9 @@ void desenhaNuvens();
 void desenhaVegetacao();
 void desenharStevePizza(float x, float y, float escala, int inverte);
 void desenharSteven(float x, float y, float escala);
+void desenhaBiscoitoGatinho(float x, float y, float escala, float transparencia);
+void desenhaHabilidadeGatinho(float x, float y);
+void desenhaPlacar();
 void display(void);
 void TeclasEspeciais(int tecla, int x, int y);
 void Teclado(unsigned char tecla, int x, int y);
@@ -80,6 +90,9 @@ int main(int argc, char** argv){
   glClearColor(1.0, 1.0, 1.0, 0.0); // Cor de fundo (branco)
   glOrtho(0.0, 100.0, 0.0, 60.0, -1.0, 1.0); // Define a área de visualização
   glClear(GL_COLOR_BUFFER_BIT);
+
+  glEnable(GL_BLEND); // Ativa blending uma vez
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Configura blending uma vez
 
   inicializaFlores(); // Inicializa as flores
 
@@ -151,7 +164,9 @@ void display(void) {
   desenhaFlores(); // Desenha as flores ao vento
   desenharStevePizza(PizzaPosX, PizzaPosY, PizzaEscala, PizzaInverte);
   desenharSteven(stevenPosX, stevenPosY, stevenEscala);
-
+  desenhaPlacar();
+  if(HABILITADO == FALSE) desenhaBiscoitoGatinho(biscoitoPosX, biscoitoPosY, 1, 255);
+  desenhaHabilidadeGatinho(3, 50);
   glutSwapBuffers(); 
 }
 
@@ -181,6 +196,16 @@ void Teclado(unsigned char tecla, int x, int y){
         // Movimento da mão direita
         case 'o': maoD += 5.0f; break; // Rotaciona mão direita
         case 'l': maoD -= 5.0f; break;
+
+        //Lançamento do objeto
+        case ' ':
+            if(HABILITADO){
+                ultimaIteracao = interacoesGLOBAL;
+                HABILITADO = FALSE;
+                biscoitoPosX = stevenPosX;
+                biscoitoPosY = stevenPosY;
+            }
+            break;
     case 27:       //o programa deverá ser finalizado
          exit(0);
     break;
@@ -1155,6 +1180,116 @@ void desenharSteven(float x, float y, float escala) {
     glPopMatrix(); // Restaura o estado anterior da matriz de transformação
 }
 
+void desenhaTexto(char *string, float x, float y){
+  	glPushMatrix();
+        // Posição no universo onde o texto será colocado
+        glRasterPos2f(x, y);
+        // Exibe caracter a caracter
+        while(*string)
+             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*string++);
+	glPopMatrix();
+}
+void desenhaPlacar(){
+
+    desenharStevePizza(3, 55, 5, FALSE);
+    //Transforma o numero para string
+    char str[50];
+    sprintf(str, "%d", acertos);
+
+    glColor3ub(68,68,68); // Cor do texto (cinza escurot)
+    desenhaTexto(str, 5, 55); //
+}
+
+void desenhaBiscoitoGatinho(float x, float y, float escala, float transparencia){
+    glPushMatrix();
+        glTranslatef(x, y, 0.0);          
+        glScalef(escala, escala, 1.0); 
+
+        glColor4ub(103, 62, 58, transparencia);
+
+        //Desenha orelhas
+        glBegin(GL_TRIANGLES);
+            glVertex2f(-0.75, 1.4);
+            glVertex2f(-1.25, 0.6);
+            glVertex2f(-0.25, 0.75);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);
+            glVertex2f(0.75, 1.4);
+            glVertex2f(1.25, 0.6);
+            glVertex2f(0.25, 0.75);
+        glEnd();
+        
+        //Desenha corpo
+        glPushMatrix();
+            glScalef(1.6, 1, 1.0); // deforma um pouco para deixar
+            circulo(0.0, 0.0, 1);
+        glPopMatrix();
+
+        //Desenha olhos
+        glColor4ub(244, 233, 215, transparencia); // Creme
+        circulo(-0.5, 0.15, 0.25);
+        glColor4ub(235, 187, 211, transparencia); // Morango
+        circulo(0.5, 0.15, 0.25);
+
+    glPopMatrix();
+
+}
+
+void desenhaHabilidadeGatinho(float x, float y){
+
+    if(HABILITADO){
+        //Desenha fundo cinza
+        glColor4ub(192, 192, 192, 200); //Cinza claro com transparência
+        glPushMatrix();
+            glTranslatef(x, y, 0.0);   
+            glBegin(GL_QUADS);
+                glVertex2f(-2, -2);  // Ponto inferior esquerdo
+                glVertex2f(2, -2);   // Ponto inferior direito
+                glVertex2f(2, 2);    // Ponto superior direito
+                glVertex2f(-2, 2);   // Ponto superior esquerdo
+            glEnd();
+                       
+        glPopMatrix();
+
+        desenhaBiscoitoGatinho(x, y, 1, 255);
+    }
+    else{
+        float tempoPassado = (interacoesGLOBAL - ultimaIteracao) * 0.03f;
+
+        float tempoRestante = COOLDOWN - tempoPassado;
+
+        float porcentagem = (tempoPassado / COOLDOWN);
+
+        desenhaBiscoitoGatinho(x, y, 1, 128);
+
+        if(tempoPassado >= COOLDOWN) HABILITADO = TRUE;
+
+        glColor4ub(192, 192, 192, 200); //Cinza claro com transparência
+    
+            glPushMatrix();
+                glTranslatef(x, y, 0.0);   
+                glBegin(GL_QUADS);
+                    glVertex2f(-2, -2);  // Ponto inferior esquerdo
+                    glVertex2f(2, -2);   // Ponto inferior direito
+                    glVertex2f(2, -2 + (4 * porcentagem));    // Ponto superior direito
+                    glVertex2f(-2, -2 + (4 * porcentagem));   // Ponto superior esquerdo
+                glEnd();
+            glPopMatrix();
+
+                       
+        //transforma tempo restante em string
+        int numero = (int) ceil(tempoRestante);
+        char str[50];
+        sprintf(str, "%d", numero);
+        glColor3ub(0, 0, 0);  // Preto
+        desenhaTexto(str, x - 0.5, y - 0.5);
+    }
+
+
+
+}
+
 void animarFlores(){
   // Atualiza a posição e rotação de cada flor
   for(int i = 0; i < NUM_FLORES; i++){
@@ -1173,6 +1308,8 @@ void animarFlores(){
 }
 
 void Animar(int interacoes) {
+
+    interacoesGLOBAL = interacoes; // Atualiza interacoesGLOBAL
     // A cada 50 interações, gera uma nova posição aleatória para a pizza
     int aux = interacoes % 50;
     if(aux == 0){
