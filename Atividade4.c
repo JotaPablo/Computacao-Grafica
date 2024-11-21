@@ -9,8 +9,10 @@
 #define PARA_BAIXO 180
 #define PI 3.14159265358979323846
 //Referentes ao objeto a ser lançado
-#define COOLDOWN 5 //Em segundos
+#define COOLDOWN 3 //Em segundos
+
 int HABILITADO = TRUE; //Variavel global para controlar pode ser disparado ou não
+int DISPARADO = FALSE; //Variavel global para controlar se foi disparado ou não
 int ultimaIteracao = 0; //Variavel global de quando foi a ultima vez que o objeto foi disparado
 int interacoesGLOBAL = 0; //Variavel global para quantas interações houve na animação
 float biscoitoPosX = 0.0;
@@ -165,8 +167,10 @@ void display(void) {
   desenharStevePizza(PizzaPosX, PizzaPosY, PizzaEscala, PizzaInverte);
   desenharSteven(stevenPosX, stevenPosY, stevenEscala);
   desenhaPlacar();
-  if(HABILITADO == FALSE) desenhaBiscoitoGatinho(biscoitoPosX, biscoitoPosY, 1, 255);
+  if(HABILITADO == FALSE && DISPARADO == TRUE) desenhaBiscoitoGatinho(biscoitoPosX, biscoitoPosY, 1, 255);
   desenhaHabilidadeGatinho(3, 50);
+
+
   glutSwapBuffers(); 
 }
 
@@ -202,6 +206,7 @@ void Teclado(unsigned char tecla, int x, int y){
             if(HABILITADO){
                 ultimaIteracao = interacoesGLOBAL;
                 HABILITADO = FALSE;
+                DISPARADO = TRUE;
                 biscoitoPosX = stevenPosX;
                 biscoitoPosY = stevenPosY;
             }
@@ -1309,9 +1314,94 @@ void animarFlores(){
   glutPostRedisplay();
 }
 
+//Calcula Area de um Triãngulo utilizando determinante
+float areaTriangulo(float x1, float y1, float x2, float y2, float x3, float y3) {
+    return fabs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+}
+
+// Função que verifica se o ponto (px, py) está dentro do triângulo formado pelos pontos (x1, y1), (x2, y2), (x3, y3)
+int pontoDentroDoTriangulo(float px, float py, float x1, float y1, float x2, float y2, float x3, float y3) {
+    // Calculando a área total do triângulo
+    float areaTotal = areaTriangulo(x1, y1, x2, y2, x3, y3);
+
+    // Calculando as áreas dos três subtriângulos formados pelo ponto (px, py)
+    float area1 = areaTriangulo(px, py, x2, y2, x3, y3);
+    float area2 = areaTriangulo(x1, y1, px, py, x3, y3);
+    float area3 = areaTriangulo(x1, y1, x2, y2, px, py);
+
+    // Se a soma das áreas dos subtriângulos for igual à área do triângulo original, o ponto está dentro
+    if (area1 + area2 + area3 == areaTotal) return TRUE;
+    else return FALSE;
+}
+
+// Função que verifica se o ponto (px, py) está dentro do retângulo
+int pontoDentroDoRetangulo(float px, float py, float x1, float y1, float x2, float y2) {
+    // Verifica se o ponto está dentro dos limites do retângulo
+    if (px >= x1 && px <= x2 && py >= y1 && py <= y2) return TRUE;
+    else return FALSE;
+}
+
+int testeColisao(){
+
+    // Definir variáveis para os vértices do triângulo que delimita a pizza (StevePizza)
+    float stevePizza_v1X = PizzaPosX - 2.85;  // Vértice esquerdo
+    float stevePizza_v1Y = PizzaPosY + 5.4;   // Vértice esquerdo
+    float stevePizza_v2X = PizzaPosX + 2.85;  // Vértice direito
+    float stevePizza_v2Y = PizzaPosY + 5.4;   // Vértice direito
+    float stevePizza_v3X = PizzaPosX;         // Vértice inferior
+    float stevePizza_v3Y = PizzaPosY - 4.7;   // Vértice inferior
+
+    // Vértices do primeiro quadrado do BiscoitoGatinho
+    float biscoitoGatinho_v1X = biscoitoPosX - 1.55, biscoitoGatinho_v1Y = biscoitoPosY - 0.3;  // Vértice inferior esquerdo
+    float biscoitoGatinho_v2X = biscoitoPosX + 1.55, biscoitoGatinho_v2Y = biscoitoPosY - 0.3;  // Vértice inferior direito
+    float biscoitoGatinho_v3X = biscoitoPosX + 1.55, biscoitoGatinho_v3Y = biscoitoPosY + 0.3;  // Vértice superior direito
+    float biscoitoGatinho_v4X = biscoitoPosX - 1.55, biscoitoGatinho_v4Y = biscoitoPosY + 0.3;  // Vértice superior esquerdo
+
+    // Vértices do segundo quadrado do BiscoitoGatinho
+    float biscoitoGatinho_v5X = biscoitoPosX - 1.2, biscoitoGatinho_v5Y = biscoitoPosY - 1;  // Vértice inferior esquerdo
+    float biscoitoGatinho_v6X = biscoitoPosX + 1.2, biscoitoGatinho_v6Y = biscoitoPosY - 1;  // Vértice inferior direito
+    float biscoitoGatinho_v7X = biscoitoPosX + 1.2, biscoitoGatinho_v7Y = biscoitoPosY + 1;  // Vértice superior direito
+    float biscoitoGatinho_v8X = biscoitoPosX - 1.2, biscoitoGatinho_v8Y = biscoitoPosY + 1;  // Vértice superior esquerdo
+
+
+    // Verificando se os vértices do triângulo estão dentro do retângulo do BiscoitoGatinho
+    if (pontoDentroDoRetangulo(stevePizza_v1X, stevePizza_v1Y, biscoitoGatinho_v1X, biscoitoGatinho_v1Y, biscoitoGatinho_v2X, biscoitoGatinho_v2Y) ||
+        pontoDentroDoRetangulo(stevePizza_v2X, stevePizza_v2Y, biscoitoGatinho_v1X, biscoitoGatinho_v1Y, biscoitoGatinho_v2X, biscoitoGatinho_v2Y) ||
+        pontoDentroDoRetangulo(stevePizza_v3X, stevePizza_v3Y, biscoitoGatinho_v1X, biscoitoGatinho_v1Y, biscoitoGatinho_v2X, biscoitoGatinho_v2Y) ||
+
+        pontoDentroDoRetangulo(stevePizza_v1X, stevePizza_v1Y, biscoitoGatinho_v5X, biscoitoGatinho_v5Y, biscoitoGatinho_v6X, biscoitoGatinho_v6Y) ||
+        pontoDentroDoRetangulo(stevePizza_v2X, stevePizza_v2Y, biscoitoGatinho_v5X, biscoitoGatinho_v5Y, biscoitoGatinho_v6X, biscoitoGatinho_v6Y) ||
+        pontoDentroDoRetangulo(stevePizza_v3X, stevePizza_v3Y, biscoitoGatinho_v5X, biscoitoGatinho_v5Y, biscoitoGatinho_v6X, biscoitoGatinho_v6Y)) {
+        return TRUE;
+    }
+
+    if (pontoDentroDoTriangulo(biscoitoGatinho_v1X, biscoitoGatinho_v1Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v2X, biscoitoGatinho_v2Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v3X, biscoitoGatinho_v3Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v4X, biscoitoGatinho_v4Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+
+            pontoDentroDoTriangulo(biscoitoGatinho_v5X, biscoitoGatinho_v5Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v6X, biscoitoGatinho_v6Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v7X, biscoitoGatinho_v7Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y) ||
+            pontoDentroDoTriangulo(biscoitoGatinho_v8X, biscoitoGatinho_v8Y, stevePizza_v1X, stevePizza_v1Y, stevePizza_v2X, stevePizza_v2Y, stevePizza_v3X, stevePizza_v3Y)) {
+            return TRUE;
+        }
+    
+    return FALSE;
+}
+
 void Animar(int interacoes) {
 
-    interacoesGLOBAL = interacoes; // Atualiza interacoesGLOBAL
+    interacoesGLOBAL = interacoes; // Atualiza interacoesGLOBA
+    //Testa se houve colisão entre o biscoito e a pizza
+    if(HABILITADO == FALSE && DISPARADO == TRUE){
+        if(testeColisao()){
+            acertos++;
+            DISPARADO = FALSE;
+        }
+
+
+    }
     // A cada 50 interações, gera uma nova posição aleatória para a pizza
     int aux = interacoes % 50;
     if(aux == 0){
