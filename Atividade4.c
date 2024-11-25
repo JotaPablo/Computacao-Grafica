@@ -11,6 +11,11 @@
 //Referentes ao objeto a ser lançado
 #define COOLDOWN 3 //Em segundos
 
+float velocidadeHorizontal = 2.0f; // Velocidade inicial no eixo X
+float velocidadeVertical = 0.0f;   // Velocidade inicial no eixo Y (0 para lançamento horizontal)
+float gravidade = -9.8f;           // Aceleração da gravidade (ajustar escala)
+float tempo = 0.0f;                // Tempo desde o lançamento
+
 int HABILITADO = TRUE; //Variavel global para controlar pode ser disparado ou não
 int DISPARADO = FALSE; //Variavel global para controlar se foi disparado ou não
 int ultimaIteracao = 0; //Variavel global de quando foi a ultima vez que o objeto foi disparado
@@ -203,12 +208,15 @@ void Teclado(unsigned char tecla, int x, int y){
 
         //Lançamento do objeto
         case ' ':
-            if(HABILITADO){
-                ultimaIteracao = interacoesGLOBAL;
-                HABILITADO = FALSE;
-                DISPARADO = TRUE;
+            if (HABILITADO) {
+                HABILITADO = FALSE; // Desabilita a habilidade
+                DISPARADO = TRUE;   // Ativa o disparo
+                ultimaIteracao = interacoesGLOBAL; // Marca a iteração atual
+                // Define a posição inicial do biscoito como a posição do Steven
                 biscoitoPosX = stevenPosX;
                 biscoitoPosY = stevenPosY;
+                velocidadeVertical = 0.0f; // Reinicia a velocidade vertical
+                tempo = 0.0f;              // Reinicia o tempo
             }
             break;
         case 'x': acertos += 1; break;
@@ -1391,6 +1399,32 @@ int testeColisao(){
 }
 
 void Animar(int interacoes) {
+
+    interacoesGLOBAL += 1;
+
+    if (DISPARADO) {
+        tempo += 0.03f; // Incrementa o tempo
+
+        // Atualiza a posição do biscoito
+        biscoitoPosX += velocidadeHorizontal * 0.03f;
+        biscoitoPosY += velocidadeVertical * 0.03f + 0.5f * gravidade * (0.03f * 0.03f);
+
+        // Atualiza a velocidade vertical 
+        velocidadeVertical += gravidade * 0.03f;
+
+        // Verifica se o biscoito caiu fora da área ou o cooldown terminou
+        if (biscoitoPosY < -10 || (interacoesGLOBAL - ultimaIteracao) * 0.03f >= COOLDOWN) {
+            DISPARADO = FALSE;      // Para o disparo
+            HABILITADO = TRUE;      // Reativa a habilidade
+            // Redefine as condições iniciais
+            biscoitoPosX = stevenPosX;
+            biscoitoPosY = stevenPosY;
+            velocidadeVertical = 0.0f;
+            tempo = 0.0f;
+        }
+    }
+
+
 
     interacoesGLOBAL = interacoes; // Atualiza interacoesGLOBA
     //Testa se houve colisão entre o biscoito e a pizza
